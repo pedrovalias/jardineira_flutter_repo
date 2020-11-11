@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "156686800706",
+    "firebase_url": "https://teste-ndmc-db.firebaseio.com",
+    "project_id": "teste-ndmc-db",
+    "storage_bucket": "teste-ndmc-db.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:156686800706:android:a1682bf46b44bd16d41adb",
+        "android_client_info": {
+          "package_name": "com.example.jardineira_flutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "156686800706-uucuflo2f59s26dvc3ochn2o2s27dr7j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.jardineira_flutter",
+            "certificate_hash": "11bde81bcb8339097c6f5b332fa77564ae4cc135"
+          }
+        },
+        {
+          "client_id": "156686800706-af2dmrhl3fn94h1dfmred77sigg6kuv9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDMmMRLzOP3Mcg92qc1zoZU6Xqo3MtSKck"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "156686800706-af2dmrhl3fn94h1dfmred77sigg6kuv9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
