@@ -1,30 +1,12 @@
+import 'dart:async';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jardineira_flutter/drawer_list.dart';
-import 'package:jardineira_flutter/pages/menu.dart';
+import 'package:jardineira_flutter/util/wifi_info.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 
-// class HomePage extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text(
-//           "Jardineira Smart",
-//           style: TextStyle(fontSize: 26),
-//         ),
-//       ),
-//       body: _body(),
-//       drawer: Menu(),
-//     );
-//   }
-
-//   _body() {
-//     return Container(
-//       color: Colors.white,
-//     );
-//   }
-// }
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -32,6 +14,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
+  int x;
+  double y;
+  // final _streamController = StreamController<bool>();
+
   @override
   final dbRef = FirebaseDatabase.instance.reference();
   bool value = false;
@@ -66,16 +52,16 @@ class _HomePageState extends State<HomePage>
         children: [
           Padding(
             padding: EdgeInsets.all(16),
-            child: _tempAmbienteStreamBuilder(),
+            child: _dadosAmbienteStreamBuilder(),
           ),
-          _dadosStreamBuilder(),
+          _dadosJardineiraStreamBuilder(),
         ],
       ),
       drawer: DrawerList(),
     );
   }
 
-  StreamBuilder<Event> _dadosStreamBuilder() {
+  StreamBuilder<Event> _dadosJardineiraStreamBuilder() {
     return StreamBuilder(
         builder: (context, snapshot) {
           if (snapshot.hasData &&
@@ -88,6 +74,7 @@ class _HomePageState extends State<HomePage>
                 padding: EdgeInsets.all(10),
                 child: Column(
                   children: [
+                    WifiInfo(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -95,14 +82,30 @@ class _HomePageState extends State<HomePage>
                             snapshot, "Vaso Cheio", "nivel_maximo"),
                       ],
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _sensorRelativoSTB(
-                            snapshot, "Umidade do Solo", "umidade_solo"),
+                        CircularPercentIndicator(
+                          radius: 60.0,
+                          animation: true,
+                          animationDuration: 1200,
+                          lineWidth: 5.0,
+                          percent: _dado(snapshot),
+                          center: Text("Solo\n" +
+                              snapshot.data.snapshot.value["umidade_solo"]
+                                  .toString() +
+                              "%"),
+                          circularStrokeCap: CircularStrokeCap.butt,
+                          progressColor: _dado(snapshot) > 0.40
+                              ? Colors.green
+                              : Colors.red,
+                        ),
+                        // _sensorRelativoSTB(
+                        //     snapshot, "Umidade do Solo", "umidade_solo"),
                       ],
                     ),
+                    SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -111,17 +114,25 @@ class _HomePageState extends State<HomePage>
                       ],
                     ),
                     SizedBox(height: 30),
-                    FloatingActionButton.extended(
-                      icon: value
-                          ? Icon(Icons.local_florist_outlined)
-                          : Icon(Icons.local_florist),
-                      backgroundColor: value ? Colors.white : Colors.lightGreen,
-                      label: value ? Text("REGAR") : Text("REGANDO"),
-                      elevation: 25.00,
-                      onPressed: () {
-                        onUpdate();
-                        acionarRega();
-                        estadoRega();
+                    StreamBuilder(
+                      initialData: false,
+                      builder: (context, snapshot) {
+                        return FloatingActionButton.extended(
+                          icon: value
+                              ? Icon(Icons.local_florist_outlined)
+                              : Icon(Icons.local_florist),
+                          backgroundColor:
+                              value ? Colors.white : Colors.lightGreen,
+                          label: value ? Text("REGAR") : Text("REGANDO"),
+                          elevation: 25.00,
+                          onPressed: () {
+                            onUpdate();
+                            acionarRega();
+                            estadoRega();
+                            print("Onpressed Valor: $value");
+                            // readData();
+                          },
+                        );
                       },
                     ),
                   ],
@@ -131,7 +142,7 @@ class _HomePageState extends State<HomePage>
           } else {}
           return Container();
         },
-        stream: dbRef.child("JD_0001/Sensores").onValue);
+        stream: dbRef.child("Jardineira_x/Sensores").onValue);
   }
 
   Column _sensorRelativoSTB(
@@ -169,7 +180,7 @@ class _HomePageState extends State<HomePage>
               ? !snapshot.data.snapshot.value["valvula_status"] == true
                   ? "REGANDO"
                   : "DESLIGADA"
-              : snapshot.data.snapshot.value[sensor] == 1
+              : snapshot.data.snapshot.value[sensor] == true
                   ? "SIM"
                   : "NÃO",
           style: TextStyle(color: Colors.white, fontSize: 20),
@@ -178,7 +189,7 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  _tempAmbienteStreamBuilder() {
+  _dadosAmbienteStreamBuilder() {
     return StreamBuilder(
         builder: (context, snapshot) {
           if (snapshot.hasData &&
@@ -200,15 +211,15 @@ class _HomePageState extends State<HomePage>
           } else {}
           return Container();
         },
-        stream: dbRef.child("JD_0001/Dados Ambiente").onValue);
+        stream: dbRef.child("Jardineira_x/Dados Ambiente").onValue);
   }
 
   Future<void> acionarRega() async {
-    dbRef.child("JD_0001/Acionamentos").set({"Rega": !value});
+    dbRef.child("Jardineira_x/Acionamentos").set({"rega": !value});
   }
 
   Future<void> estadoRega() async {
-    dbRef.child("JD_0001/Acionamentos").onValue.listen((event) {
+    dbRef.child("Jardineira_x/Acionamentos").onValue.listen((event) {
       var snapshot = event.snapshot;
       print(snapshot.value);
     });
@@ -221,8 +232,30 @@ class _HomePageState extends State<HomePage>
   // }
 
   Future<void> readData() async {
-    dbRef.child("Dados").once().then((DataSnapshot snapshot) {
+    dbRef
+        .child("Jardineira_x/Acionamentos")
+        .once()
+        .then((DataSnapshot snapshot) {
       print(snapshot.value);
     });
+  }
+
+  // Metodo responsavel por gerenciar a memoria das telas
+  // @override
+  // void dispose() {
+  //   super.dispose();
+
+  //   // Fechar o fluxo de dados
+  //   _streamController.close();
+  // }
+
+  _dado(snapshot) {
+    x = snapshot.data.snapshot.value["umidade_solo"];
+
+    y = x / 100;
+    // print(x);
+    // print(y);
+
+    return y;
   }
 }

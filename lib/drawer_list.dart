@@ -9,7 +9,7 @@ class DrawerList extends StatelessWidget {
           children: <Widget>[
             new DrawerHeader(
               child: new Text("DRAWER HEADER.."),
-              decoration: new BoxDecoration(color: Colors.orange),
+              decoration: new BoxDecoration(color: Colors.lightGreen),
             ),
             new ListTile(
               title: new Text("Item 1"),
