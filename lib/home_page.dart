@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:jardineira_flutter/drawer_list.dart';
 import 'package:jardineira_flutter/util/wifi_info.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -14,8 +15,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
-  int x;
-  double y;
   // final _streamController = StreamController<bool>();
 
   @override
@@ -49,7 +48,7 @@ class _HomePageState extends State<HomePage>
       ),
       key: _scaffoldKey,
       body: Column(
-        children: [
+        children: <Widget>[
           Padding(
             padding: EdgeInsets.all(16),
             child: _dadosAmbienteStreamBuilder(),
@@ -63,104 +62,171 @@ class _HomePageState extends State<HomePage>
 
   StreamBuilder<Event> _dadosJardineiraStreamBuilder() {
     return StreamBuilder(
-        builder: (context, snapshot) {
-          if (snapshot.hasData &&
-              !snapshot.hasError &&
-              snapshot.data.snapshot.value != null) {
-            return Card(
-              shape: StadiumBorder(),
-              elevation: 10,
-              child: Container(
-                padding: EdgeInsets.all(10),
-                child: Column(
-                  children: [
-                    WifiInfo(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _sensorBooleanSTB(
-                            snapshot, "Vaso Cheio", "nivel_maximo"),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CircularPercentIndicator(
-                          radius: 60.0,
-                          animation: true,
-                          animationDuration: 1200,
-                          lineWidth: 5.0,
-                          percent: _dado(snapshot),
-                          center: Text("Solo\n" +
-                              snapshot.data.snapshot.value["umidade_solo"]
-                                  .toString() +
-                              "%"),
-                          circularStrokeCap: CircularStrokeCap.butt,
-                          progressColor: _dado(snapshot) > 0.40
-                              ? Colors.green
-                              : Colors.red,
+      builder: (context, snapshot) {
+        if (snapshot.hasData &&
+            !snapshot.hasError &&
+            snapshot.data.snapshot.value != null) {
+          return Card(
+            shape: StadiumBorder(),
+            elevation: 10,
+            child: Container(
+              padding: EdgeInsets.all(10),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Jardineira_x",
+                        style: TextStyle(fontSize: 25),
+                      ),
+                      SizedBox(width: 8),
+                      WifiInfo(),
+                    ],
+                  ),
+                  SizedBox(height: 30),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Center(
+                        child: Container(
+                          alignment: Alignment.center,
+                          height: 60,
+                          width: 60,
+                          // color: Colors.yellow,
+                          child: LiquidCircularProgressIndicator(
+                            value:
+                                snapshot.data.snapshot.value["nivel_maximo"] ==
+                                        true
+                                    ? 0.85
+                                    : 0.20,
+                            valueColor: AlwaysStoppedAnimation(Colors.blue),
+                            backgroundColor: Colors.white,
+                            borderColor: Colors.grey[300],
+                            borderWidth: 5.0,
+                            direction: Axis.vertical,
+                            center: Icon(
+                              Icons.waves,
+                              color: Colors.black,
+                            ),
+                          ),
                         ),
-                        // _sensorRelativoSTB(
-                        //     snapshot, "Umidade do Solo", "umidade_solo"),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _sensorBooleanSTB(
-                            snapshot, "Status Válvula", "valvula_status")
-                      ],
-                    ),
-                    SizedBox(height: 30),
-                    StreamBuilder(
-                      initialData: false,
-                      builder: (context, snapshot) {
-                        return FloatingActionButton.extended(
-                          icon: value
-                              ? Icon(Icons.local_florist_outlined)
-                              : Icon(Icons.local_florist),
-                          backgroundColor:
-                              value ? Colors.white : Colors.lightGreen,
-                          label: value ? Text("REGAR") : Text("REGANDO"),
-                          elevation: 25.00,
-                          onPressed: () {
-                            onUpdate();
-                            acionarRega();
-                            estadoRega();
-                            print("Onpressed Valor: $value");
-                            // readData();
-                          },
-                        );
-                      },
-                    ),
-                  ],
-                ),
+                      ),
+                      SizedBox(width: 16),
+                      // _sensorBooleanSTB(
+                      //     snapshot, "Vaso Cheio", "nivel_maximo"),
+                      SizedBox(width: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularPercentIndicator(
+                            radius: 60.0,
+                            animation: true,
+                            animationDuration: 1200,
+                            lineWidth: 5.0,
+                            percent: _umidadeConvert(snapshot),
+                            center: Text("Solo\n" +
+                                snapshot.data.snapshot.value["umidade_solo"]
+                                    .toString() +
+                                "%"),
+                            circularStrokeCap: CircularStrokeCap.butt,
+                            progressColor: _umidadeConvert(snapshot) > 0.40
+                                ? Colors.green
+                                : Colors.red,
+                          ),
+                          // _sensorRelativoSTB(
+                          //     snapshot, "Umidade do Solo", "umidade_solo"),
+                        ],
+                      ),
+                      SizedBox(width: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          // _bigCircle(),
+                          _sensorBooleanSTB(
+                              snapshot, "Status Válvula", "valvula_status")
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 30),
+                  StreamBuilder(
+                    initialData: false,
+                    builder: (context, snapshot) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          FloatingActionButton.extended(
+                            icon: value
+                                ? Icon(Icons.local_florist_outlined)
+                                : Icon(Icons.local_florist),
+                            backgroundColor:
+                                value ? Colors.lightGreen : Colors.yellow[300],
+                            label: value ? Text("REGAR") : Text("REGANDO"),
+                            elevation: 25.00,
+                            onPressed: () {
+                              onUpdate();
+                              acionarRega();
+                              estadoRega();
+                              print("Onpressed Valor: $value");
+                              // readData();
+                            },
+                          ),
+                          SizedBox(width: 10),
+                          FloatingActionButton.extended(
+                            backgroundColor: Colors.grey[300],
+                            label: Icon(Icons.settings),
+                            elevation: 25.00,
+                            onPressed: () {},
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ],
               ),
-            );
-          } else {}
-          return Container();
-        },
-        stream: dbRef.child("Jardineira_x/Sensores").onValue);
+            ),
+          );
+        } else {
+          return Container(
+            Text("Falha ao carregar..."),
+          );
+        }
+        // return Container();
+      },
+      stream: dbRef.child("Jardineira_x/Sensores").onValue,
+    );
   }
 
   Column _sensorRelativoSTB(
       AsyncSnapshot<Event> snapshot, String titulo, String sensor) {
+    String _simbolo;
+
+    if (sensor == "temperatura") {
+      _simbolo = "°";
+    } else {
+      _simbolo = "%";
+    }
+
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text(titulo,
               style: TextStyle(
-                  color: value ? Colors.white : Colors.green[300],
+                  color: Colors.green[300],
                   fontSize: 20,
                   fontWeight: FontWeight.bold)),
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text(snapshot.data.snapshot.value[sensor].toString() + "%",
-              style: TextStyle(color: Colors.white, fontSize: 20)),
+          child: Text(
+            snapshot.data.snapshot.value[sensor].toString() + _simbolo,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+            ),
+          ),
         ),
       ],
     );
@@ -170,11 +236,14 @@ class _HomePageState extends State<HomePage>
       AsyncSnapshot<Event> snapshot, String titulo, String sensor) {
     return Column(
       children: [
-        Text(titulo,
-            style: TextStyle(
-                color: value ? Colors.white : Colors.green[300],
-                fontSize: 20,
-                fontWeight: FontWeight.bold)),
+        Text(
+          titulo,
+          style: TextStyle(
+            color: Colors.green[300],
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         Text(
           sensor == "valvula_status"
               ? !snapshot.data.snapshot.value["valvula_status"] == true
@@ -249,13 +318,25 @@ class _HomePageState extends State<HomePage>
   //   _streamController.close();
   // }
 
-  _dado(snapshot) {
-    x = snapshot.data.snapshot.value["umidade_solo"];
-
-    y = x / 100;
+  _umidadeConvert(snapshot) {
+    double umdd;
+    umdd = snapshot.data.snapshot.value["umidade_solo"] / 100;
     // print(x);
     // print(y);
-
-    return y;
+    return umdd;
   }
+
+  // Widget _bigCircle() {
+  //   return Container(
+  //     alignment: Alignment.center,
+  //     width: 60.0,
+  //     height: 60.0,
+  //     decoration: BoxDecoration(
+  //       color: Colors.orange,
+  //       shape: BoxShape.rectangle,
+  //       borderRadius: BorderRadius.circular(16),
+  //     ),
+  //     child: Text("teste"),
+  //   );
+  // }
 }
