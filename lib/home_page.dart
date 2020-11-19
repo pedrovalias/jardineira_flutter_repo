@@ -4,6 +4,9 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jardineira_flutter/drawer_list.dart';
+import 'package:jardineira_flutter/pages/info_dialog.dart';
+import 'package:jardineira_flutter/pages/settings_page.dart';
+import 'package:jardineira_flutter/util/nav.dart';
 import 'package:jardineira_flutter/util/wifi_info.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
@@ -63,6 +66,10 @@ class _HomePageState extends State<HomePage>
   StreamBuilder<Event> _dadosJardineiraStreamBuilder() {
     return StreamBuilder(
       builder: (context, snapshot) {
+        bool nivel_maximo = snapshot.data.snapshot.value["nivel_maximo"];
+
+        int umidade_solo = snapshot.data.snapshot.value["umidade_solo"];
+
         if (snapshot.hasData &&
             !snapshot.hasError &&
             snapshot.data.snapshot.value != null) {
@@ -72,10 +79,10 @@ class _HomePageState extends State<HomePage>
             child: Container(
               padding: EdgeInsets.all(10),
               child: Column(
-                children: [
+                children: <Widget>[
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                    children: <Widget>[
                       Text(
                         "Jardineira_x",
                         style: TextStyle(fontSize: 25),
@@ -95,19 +102,29 @@ class _HomePageState extends State<HomePage>
                           width: 60,
                           // color: Colors.yellow,
                           child: LiquidCircularProgressIndicator(
-                            value:
-                                snapshot.data.snapshot.value["nivel_maximo"] ==
-                                        true
-                                    ? 0.85
-                                    : 0.20,
+                            value: nivel_maximo == true ? 0.85 : 0.20,
                             valueColor: AlwaysStoppedAnimation(Colors.blue),
                             backgroundColor: Colors.white,
                             borderColor: Colors.grey[300],
                             borderWidth: 5.0,
                             direction: Axis.vertical,
-                            center: Icon(
-                              Icons.waves,
-                              color: Colors.black,
+                            center: Container(
+                              child: FlatButton(
+                                child: Icon(
+                                  Icons.opacity,
+                                  color: Colors.black,
+                                ),
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (_) => InfoDialog(
+                                        "Nível de Água do Reservatório",
+                                        nivel_maximo == true
+                                            ? "O reservatório está cheio. Nenhuma ação necessária."
+                                            : "O reservatório está incompleto."),
+                                  );
+                                },
+                              ),
                             ),
                           ),
                         ),
@@ -125,10 +142,8 @@ class _HomePageState extends State<HomePage>
                             animationDuration: 1200,
                             lineWidth: 5.0,
                             percent: _umidadeConvert(snapshot),
-                            center: Text("Solo\n" +
-                                snapshot.data.snapshot.value["umidade_solo"]
-                                    .toString() +
-                                "%"),
+                            center:
+                                Text("Solo\n" + umidade_solo.toString() + "%"),
                             circularStrokeCap: CircularStrokeCap.butt,
                             progressColor: _umidadeConvert(snapshot) > 0.40
                                 ? Colors.green
@@ -144,7 +159,7 @@ class _HomePageState extends State<HomePage>
                         children: <Widget>[
                           // _bigCircle(),
                           _sensorBooleanSTB(
-                              snapshot, "Status Válvula", "valvula_status")
+                              snapshot, "Válvula de Água", "valvula_status")
                         ],
                       ),
                     ],
@@ -177,7 +192,13 @@ class _HomePageState extends State<HomePage>
                             backgroundColor: Colors.grey[300],
                             label: Icon(Icons.settings),
                             elevation: 25.00,
-                            onPressed: () {},
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (_) =>
+                                    InfoDialog("Configurações", "configuração"),
+                              );
+                            },
                           ),
                         ],
                       );
@@ -188,9 +209,7 @@ class _HomePageState extends State<HomePage>
             ),
           );
         } else {
-          return Container(
-            Text("Falha ao carregar..."),
-          );
+          return Container();
         }
         // return Container();
       },
