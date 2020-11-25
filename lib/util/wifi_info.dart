@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:jardineira_flutter/pages/info_dialog.dart';
+import 'package:jardineira_flutter/util/constantes.dart';
 
 class WifiInfo extends StatelessWidget {
   final dbRef = FirebaseDatabase.instance.reference();
@@ -23,10 +24,11 @@ class WifiInfo extends StatelessWidget {
             showDialog(
               context: context,
               builder: (_) => InfoDialog(
-                  "Conexão Wifi",
-                  _conexao_status == true
-                      ? "Jardineira está conectada."
-                      : "Jardineira está desconectada."),
+                "Conexão Wifi",
+                _conexao_status == true
+                    ? Constantes.WIFI_OK
+                    : Constantes.WIFI_NOK,
+              ),
             );
           },
         );

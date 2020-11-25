@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:jardineira_flutter/drawer_list.dart';
 import 'package:jardineira_flutter/pages/info_dialog.dart';
 import 'package:jardineira_flutter/pages/settings_page.dart';
+import 'package:jardineira_flutter/util/constantes.dart';
+import 'package:jardineira_flutter/util/button_error_dialog.dart';
 import 'package:jardineira_flutter/util/nav.dart';
 import 'package:jardineira_flutter/util/wifi_info.dart';
 import 'package:percent_indicator/percent_indicator.dart';
@@ -66,9 +68,11 @@ class _HomePageState extends State<HomePage>
   StreamBuilder<Event> _dadosJardineiraStreamBuilder() {
     return StreamBuilder(
       builder: (context, snapshot) {
-        bool nivel_maximo = snapshot.data.snapshot.value["nivel_maximo"];
+        bool nivel_maximo =
+            snapshot.data.snapshot.value[Constantes.NIVEL_MAXIMO];
 
-        int umidade_solo = snapshot.data.snapshot.value["umidade_solo"];
+        int umidade_solo =
+            snapshot.data.snapshot.value[Constantes.UMIDADE_SOLO];
 
         if (snapshot.hasData &&
             !snapshot.hasError &&
@@ -111,17 +115,18 @@ class _HomePageState extends State<HomePage>
                             center: Container(
                               child: FlatButton(
                                 child: Icon(
-                                  Icons.opacity,
+                                  Icons.waves,
                                   color: Colors.black,
                                 ),
                                 onPressed: () {
                                   showDialog(
                                     context: context,
                                     builder: (_) => InfoDialog(
-                                        "Nível de Água do Reservatório",
-                                        nivel_maximo == true
-                                            ? "O reservatório está cheio. Nenhuma ação necessária."
-                                            : "O reservatório está incompleto."),
+                                      "Nível de Água do Reservatório",
+                                      nivel_maximo == true
+                                          ? Constantes.RESERVATORIO_OK
+                                          : Constantes.RESERVATORIO_NOK,
+                                    ),
                                   );
                                 },
                               ),
@@ -158,8 +163,8 @@ class _HomePageState extends State<HomePage>
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           // _bigCircle(),
-                          _sensorBooleanSTB(
-                              snapshot, "Válvula de Água", "valvula_status")
+                          _sensorBooleanSTB(snapshot, "Válvula de Água",
+                              Constantes.VALVULA_STATUS)
                         ],
                       ),
                     ],
@@ -213,7 +218,7 @@ class _HomePageState extends State<HomePage>
         }
         // return Container();
       },
-      stream: dbRef.child("Jardineira_x/Sensores").onValue,
+      stream: dbRef.child(Constantes.PATH_SENSORES).onValue,
     );
   }
 
@@ -221,7 +226,7 @@ class _HomePageState extends State<HomePage>
       AsyncSnapshot<Event> snapshot, String titulo, String sensor) {
     String _simbolo;
 
-    if (sensor == "temperatura") {
+    if (sensor == Constantes.TEMPERATURA) {
       _simbolo = "°";
     } else {
       _simbolo = "%";
@@ -239,13 +244,15 @@ class _HomePageState extends State<HomePage>
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text(
-            snapshot.data.snapshot.value[sensor].toString() + _simbolo,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-            ),
-          ),
+          child: snapshot.data.snapshot.value[sensor] == 0
+              ? ButtonErrorDialog("Falha", Constantes.ERRO_LEITURA_SENSOR)
+              : Text(
+                  snapshot.data.snapshot.value[sensor].toString() + _simbolo,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                  ),
+                ),
         ),
       ],
     );
@@ -264,8 +271,8 @@ class _HomePageState extends State<HomePage>
           ),
         ),
         Text(
-          sensor == "valvula_status"
-              ? !snapshot.data.snapshot.value["valvula_status"] == true
+          sensor == Constantes.VALVULA_STATUS
+              ? !snapshot.data.snapshot.value[Constantes.VALVULA_STATUS] == true
                   ? "REGANDO"
                   : "DESLIGADA"
               : snapshot.data.snapshot.value[sensor] == true
@@ -289,25 +296,25 @@ class _HomePageState extends State<HomePage>
                 Padding(
                     padding: const EdgeInsets.only(right: 30),
                     child: _sensorRelativoSTB(
-                        snapshot, "Temperatura", "temperatura")),
+                        snapshot, "Temperatura", Constantes.TEMPERATURA)),
                 Padding(
                     padding: const EdgeInsets.only(left: 30),
-                    child: _sensorRelativoSTB(
-                        snapshot, "Umidade do Ar", "umidade_relativa")),
+                    child: _sensorRelativoSTB(snapshot, "Umidade do Ar",
+                        Constantes.UMIDADE_RELATIVA)),
               ],
             );
           } else {}
           return Container();
         },
-        stream: dbRef.child("Jardineira_x/Dados Ambiente").onValue);
+        stream: dbRef.child(Constantes.PATH_DADOS_AMBIENTE).onValue);
   }
 
   Future<void> acionarRega() async {
-    dbRef.child("Jardineira_x/Acionamentos").set({"rega": !value});
+    dbRef.child(Constantes.PATH_ACIONAMENTOS).set({"rega": !value});
   }
 
   Future<void> estadoRega() async {
-    dbRef.child("Jardineira_x/Acionamentos").onValue.listen((event) {
+    dbRef.child(Constantes.PATH_ACIONAMENTOS).onValue.listen((event) {
       var snapshot = event.snapshot;
       print(snapshot.value);
     });
@@ -321,7 +328,7 @@ class _HomePageState extends State<HomePage>
 
   Future<void> readData() async {
     dbRef
-        .child("Jardineira_x/Acionamentos")
+        .child(Constantes.PATH_ACIONAMENTOS)
         .once()
         .then((DataSnapshot snapshot) {
       print(snapshot.value);
@@ -339,7 +346,7 @@ class _HomePageState extends State<HomePage>
 
   _umidadeConvert(snapshot) {
     double umdd;
-    umdd = snapshot.data.snapshot.value["umidade_solo"] / 100;
+    umdd = snapshot.data.snapshot.value[Constantes.UMIDADE_SOLO] / 100;
     // print(x);
     // print(y);
     return umdd;
