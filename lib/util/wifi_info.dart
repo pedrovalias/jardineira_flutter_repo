@@ -1,6 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:jardineira_flutter/pages/info_dialog.dart';
+import 'package:jardineira_flutter/util/info_dialog.dart';
 import 'package:jardineira_flutter/util/constantes.dart';
 
 class WifiInfo extends StatelessWidget {
@@ -9,7 +9,8 @@ class WifiInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return StreamBuilder(
       builder: (context, snapshot) {
-        bool _conexao_status = snapshot.data.snapshot.value["conexao_status"];
+        bool _conexao_status =
+            snapshot.data.snapshot.value[Constantes.CONEXAO_STATUS];
         return FlatButton(
           minWidth: 10,
           shape:
@@ -33,7 +34,7 @@ class WifiInfo extends StatelessWidget {
           },
         );
       },
-      stream: dbRef.child("Jardineira_x/Conexao").onValue,
+      stream: dbRef.child(Constantes.PATH_CONEXAO).onValue,
     );
   }
 }

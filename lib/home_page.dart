@@ -4,7 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jardineira_flutter/drawer_list.dart';
-import 'package:jardineira_flutter/pages/info_dialog.dart';
+import 'package:jardineira_flutter/util/info_dialog.dart';
 import 'package:jardineira_flutter/pages/settings_page.dart';
 import 'package:jardineira_flutter/util/constantes.dart';
 import 'package:jardineira_flutter/util/button_error_dialog.dart';
@@ -68,15 +68,13 @@ class _HomePageState extends State<HomePage>
   StreamBuilder<Event> _dadosJardineiraStreamBuilder() {
     return StreamBuilder(
       builder: (context, snapshot) {
-        bool nivel_maximo =
-            snapshot.data.snapshot.value[Constantes.NIVEL_MAXIMO];
-
-        int umidade_solo =
-            snapshot.data.snapshot.value[Constantes.UMIDADE_SOLO];
-
         if (snapshot.hasData &&
             !snapshot.hasError &&
             snapshot.data.snapshot.value != null) {
+          // bool nivel_maximo =
+          //     snapshot.data.snapshot.value[Constantes.NIVEL_MAXIMO];
+          // int umidade_solo =
+          //     snapshot.data.snapshot.value[Constantes.UMIDADE_SOLO];
           return Card(
             shape: StadiumBorder(),
             elevation: 10,
@@ -106,7 +104,11 @@ class _HomePageState extends State<HomePage>
                           width: 60,
                           // color: Colors.yellow,
                           child: LiquidCircularProgressIndicator(
-                            value: nivel_maximo == true ? 0.85 : 0.20,
+                            value: snapshot.data.snapshot
+                                        .value[Constantes.NIVEL_MAXIMO] ==
+                                    true
+                                ? 0.85
+                                : 0.20,
                             valueColor: AlwaysStoppedAnimation(Colors.blue),
                             backgroundColor: Colors.white,
                             borderColor: Colors.grey[300],
@@ -123,7 +125,9 @@ class _HomePageState extends State<HomePage>
                                     context: context,
                                     builder: (_) => InfoDialog(
                                       "Nível de Água do Reservatório",
-                                      nivel_maximo == true
+                                      snapshot.data.snapshot.value[
+                                                  Constantes.NIVEL_MAXIMO] ==
+                                              true
                                           ? Constantes.RESERVATORIO_OK
                                           : Constantes.RESERVATORIO_NOK,
                                     ),
@@ -147,8 +151,11 @@ class _HomePageState extends State<HomePage>
                             animationDuration: 1200,
                             lineWidth: 5.0,
                             percent: _umidadeConvert(snapshot),
-                            center:
-                                Text("Solo\n" + umidade_solo.toString() + "%"),
+                            center: Text("Solo\n" +
+                                snapshot.data.snapshot
+                                    .value[Constantes.UMIDADE_SOLO]
+                                    .toString() +
+                                "%"),
                             circularStrokeCap: CircularStrokeCap.butt,
                             progressColor: _umidadeConvert(snapshot) > 0.40
                                 ? Colors.green
@@ -177,6 +184,7 @@ class _HomePageState extends State<HomePage>
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           FloatingActionButton.extended(
+                            heroTag: "btnRegar",
                             icon: value
                                 ? Icon(Icons.local_florist_outlined)
                                 : Icon(Icons.local_florist),
@@ -194,15 +202,22 @@ class _HomePageState extends State<HomePage>
                           ),
                           SizedBox(width: 10),
                           FloatingActionButton.extended(
+                            heroTag: "btnSettings",
                             backgroundColor: Colors.grey[300],
                             label: Icon(Icons.settings),
                             elevation: 25.00,
                             onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (_) =>
-                                    InfoDialog("Configurações", "configuração"),
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SettingsPage(),
+                                ),
                               );
+                              // showDialog(
+                              //   context: context,
+                              //   builder: (_) =>
+                              //       InfoDialog("Configurações", "configuração"),
+                              // );
                             },
                           ),
                         ],
@@ -310,7 +325,7 @@ class _HomePageState extends State<HomePage>
   }
 
   Future<void> acionarRega() async {
-    dbRef.child(Constantes.PATH_ACIONAMENTOS).set({"rega": !value});
+    dbRef.child(Constantes.PATH_ACIONAMENTOS).set({Constantes.REGA: !value});
   }
 
   Future<void> estadoRega() async {

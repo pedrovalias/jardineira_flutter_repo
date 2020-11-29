@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jardineira_flutter/pages/info_dialog.dart';
+import 'package:jardineira_flutter/util/info_dialog.dart';
 
 class ButtonErrorDialog extends StatelessWidget {
   String _titulo;
