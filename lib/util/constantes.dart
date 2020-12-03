@@ -30,4 +30,9 @@ class Constantes {
   static const String TEMPO_REGA = "tempo_rega";
   static const String IDENTIFICADOR_ID = "id";
   static const String QTD_EXECUCOES_PROGRAMA = "execucoes_programa";
+
+  static const String INFO_UMIDADE_SOLO_SLIDER =
+      "Porcentagem ideal de umidade do solo. A Jardineira só irá seguir com o processo de rega caso identificado umidade abaixo do valor estipulado.";
+  static const String INFO_TEMPO_REGA_SLIDER =
+      "Tempo total da ação de rega. Este parâmetro pode ser selecionado de 0 a 60 segundos.";
 }

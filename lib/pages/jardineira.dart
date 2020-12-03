@@ -23,6 +23,7 @@ class JardineiraX {
   Conexao conexao;
   DadosAmbiente dadosAmbiente;
   Identificador identificador;
+  Info info;
   Sensores sensores;
 
   JardineiraX(
@@ -30,6 +31,7 @@ class JardineiraX {
       this.conexao,
       this.dadosAmbiente,
       this.identificador,
+      this.info,
       this.sensores});
 
   JardineiraX.fromJson(Map<String, dynamic> json) {
@@ -44,6 +46,7 @@ class JardineiraX {
     identificador = json['Identificador'] != null
         ? new Identificador.fromJson(json['Identificador'])
         : null;
+    info = json['Info'] != null ? new Info.fromJson(json['Info']) : null;
     sensores = json['Sensores'] != null
         ? new Sensores.fromJson(json['Sensores'])
         : null;
@@ -63,6 +66,9 @@ class JardineiraX {
     if (this.identificador != null) {
       data['Identificador'] = this.identificador.toJson();
     }
+    if (this.info != null) {
+      data['Info'] = this.info.toJson();
+    }
     if (this.sensores != null) {
       data['Sensores'] = this.sensores.toJson();
     }
@@ -71,17 +77,26 @@ class JardineiraX {
 }
 
 class Acionamentos {
+  int limiarSeco;
   bool rega;
+  int tempoLoop;
+  int tempoRega;
 
-  Acionamentos({this.rega});
+  Acionamentos({this.limiarSeco, this.rega, this.tempoLoop, this.tempoRega});
 
   Acionamentos.fromJson(Map<String, dynamic> json) {
+    limiarSeco = json['limiar_seco'];
     rega = json['rega'];
+    tempoLoop = json['tempo_loop'];
+    tempoRega = json['tempo_rega'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['limiar_seco'] = this.limiarSeco;
     data['rega'] = this.rega;
+    data['tempo_loop'] = this.tempoLoop;
+    data['tempo_rega'] = this.tempoRega;
     return data;
   }
 }
@@ -136,6 +151,22 @@ class Identificador {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
+    return data;
+  }
+}
+
+class Info {
+  int execucoesPrograma;
+
+  Info({this.execucoesPrograma});
+
+  Info.fromJson(Map<String, dynamic> json) {
+    execucoesPrograma = json['execucoes_programa'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['execucoes_programa'] = this.execucoesPrograma;
     return data;
   }
 }
