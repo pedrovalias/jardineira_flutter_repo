@@ -4,6 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jardineira_flutter/drawer_list.dart';
+import 'package:jardineira_flutter/pages/menu.dart';
 import 'package:jardineira_flutter/util/info_dialog.dart';
 import 'package:jardineira_flutter/pages/settings_page.dart';
 import 'package:jardineira_flutter/util/constantes.dart';
@@ -61,7 +62,7 @@ class _HomePageState extends State<HomePage>
           _dadosJardineiraStreamBuilder(),
         ],
       ),
-      drawer: DrawerList(),
+      drawer: Menu(),
     );
   }
 
@@ -75,6 +76,7 @@ class _HomePageState extends State<HomePage>
           //     snapshot.data.snapshot.value[Constantes.NIVEL_MAXIMO];
           // int umidade_solo =
           //     snapshot.data.snapshot.value[Constantes.UMIDADE_SOLO];
+          double _valor = 2;
           return Card(
             shape: StadiumBorder(),
             elevation: 10,
