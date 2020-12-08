@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jardineira_flutter/drawer_list.dart';
 import 'package:jardineira_flutter/pages/menu.dart';
 import 'package:jardineira_flutter/util/info_dialog.dart';
@@ -13,6 +14,7 @@ import 'package:jardineira_flutter/util/nav.dart';
 import 'package:jardineira_flutter/util/wifi_info.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
+import 'package:weather_icons/weather_icons.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -171,6 +173,8 @@ class _HomePageState extends State<HomePage>
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
+                          FaIcon(FontAwesomeIcons.faucet),
+
                           // _bigCircle(),
                           _sensorBooleanSTB(snapshot, "Válvula de Água",
                               Constantes.VALVULA_STATUS)
@@ -263,12 +267,21 @@ class _HomePageState extends State<HomePage>
           padding: const EdgeInsets.all(8.0),
           child: snapshot.data.snapshot.value[sensor] == 0
               ? ButtonErrorDialog("Falha", Constantes.ERRO_LEITURA_SENSOR)
-              : Text(
-                  snapshot.data.snapshot.value[sensor].toString() + _simbolo,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                  ),
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      snapshot.data.snapshot.value[sensor].toString() +
+                          _simbolo,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                      ),
+                    ),
+                    // Icon(sensor == Constantes.TEMPERATURA
+                    //     ? WeatherIcons.celsius
+                    //     : WeatherIcons.humidity),
+                  ],
                 ),
         ),
       ],

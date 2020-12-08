@@ -51,6 +51,45 @@ class _SettingsPageState extends State<SettingsPage> {
               child: Column(
                 // mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
+                  ListTile(
+                    leading: Icon(Icons.ac_unit),
+                    title: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(left: 20, right: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Umidade do Solo",
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'RobotoMono'),
+                              ),
+                              Text(
+                                snapshot.data.snapshot
+                                    .value[Constantes.UMIDADE_SOLO]
+                                    .toString(),
+                              )
+                            ],
+                          ),
+                        ),
+                        Slider(
+                          value: _valor1,
+                          min: 0,
+                          max: 100,
+                          onChanged: (double v) {
+                            setState(() {
+                              _valor1 = v;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  _divider(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[

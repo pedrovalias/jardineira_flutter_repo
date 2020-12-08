@@ -1,40 +1,42 @@
-class Jardineira {
-  JardineiraX jardineiraX;
+class Jardineiras {
+  Jardineira jardineira;
 
-  Jardineira({this.jardineiraX});
+  Jardineiras({this.jardineira});
 
-  Jardineira.fromJson(Map<String, dynamic> json) {
-    jardineiraX = json['Jardineira_x'] != null
-        ? new JardineiraX.fromJson(json['Jardineira_x'])
+  Jardineiras.fromJson(Map<String, dynamic> json) {
+    jardineira = json['Jardineira'] != null
+        ? new Jardineira.fromJson(json['Jardineira'])
         : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.jardineiraX != null) {
-      data['Jardineira_x'] = this.jardineiraX.toJson();
+    if (this.jardineira != null) {
+      data['Jardineira'] = this.jardineira.toJson();
     }
     return data;
   }
 }
 
-class JardineiraX {
+class Jardineira {
   Acionamentos acionamentos;
   Conexao conexao;
   DadosAmbiente dadosAmbiente;
   Identificador identificador;
   Info info;
   Sensores sensores;
+  Teste teste;
 
-  JardineiraX(
+  Jardineira(
       {this.acionamentos,
       this.conexao,
       this.dadosAmbiente,
       this.identificador,
       this.info,
-      this.sensores});
+      this.sensores,
+      this.teste});
 
-  JardineiraX.fromJson(Map<String, dynamic> json) {
+  Jardineira.fromJson(Map<String, dynamic> json) {
     acionamentos = json['Acionamentos'] != null
         ? new Acionamentos.fromJson(json['Acionamentos'])
         : null;
@@ -50,6 +52,7 @@ class JardineiraX {
     sensores = json['Sensores'] != null
         ? new Sensores.fromJson(json['Sensores'])
         : null;
+    teste = json['Teste'] != null ? new Teste.fromJson(json['Teste']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -72,19 +75,29 @@ class JardineiraX {
     if (this.sensores != null) {
       data['Sensores'] = this.sensores.toJson();
     }
+    if (this.teste != null) {
+      data['Teste'] = this.teste.toJson();
+    }
     return data;
   }
 }
 
 class Acionamentos {
+  bool autoAjusteLoop;
   int limiarSeco;
   bool rega;
   int tempoLoop;
   int tempoRega;
 
-  Acionamentos({this.limiarSeco, this.rega, this.tempoLoop, this.tempoRega});
+  Acionamentos(
+      {this.autoAjusteLoop,
+      this.limiarSeco,
+      this.rega,
+      this.tempoLoop,
+      this.tempoRega});
 
   Acionamentos.fromJson(Map<String, dynamic> json) {
+    autoAjusteLoop = json['auto_ajuste_loop'];
     limiarSeco = json['limiar_seco'];
     rega = json['rega'];
     tempoLoop = json['tempo_loop'];
@@ -93,6 +106,7 @@ class Acionamentos {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['auto_ajuste_loop'] = this.autoAjusteLoop;
     data['limiar_seco'] = this.limiarSeco;
     data['rega'] = this.rega;
     data['tempo_loop'] = this.tempoLoop;
@@ -189,6 +203,47 @@ class Sensores {
     data['nivel_maximo'] = this.nivelMaximo;
     data['umidade_solo'] = this.umidadeSolo;
     data['valvula_status'] = this.valvulaStatus;
+    return data;
+  }
+}
+
+class Teste {
+  int alterouLoopAutomatico;
+  int contadorAltaTemperatura;
+  int contadorBaixaTemperatura;
+  int iFor;
+  int iObter;
+  int tempoLoopControle;
+  int tempoLoopControleValidacao;
+
+  Teste(
+      {this.alterouLoopAutomatico,
+      this.contadorAltaTemperatura,
+      this.contadorBaixaTemperatura,
+      this.iFor,
+      this.iObter,
+      this.tempoLoopControle,
+      this.tempoLoopControleValidacao});
+
+  Teste.fromJson(Map<String, dynamic> json) {
+    alterouLoopAutomatico = json['alterou_loop_automatico'];
+    contadorAltaTemperatura = json['contadorAltaTemperatura'];
+    contadorBaixaTemperatura = json['contadorBaixaTemperatura'];
+    iFor = json['i_for'];
+    iObter = json['i_obter'];
+    tempoLoopControle = json['tempoLoopControle'];
+    tempoLoopControleValidacao = json['tempoLoopControle_Validacao'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['alterou_loop_automatico'] = this.alterouLoopAutomatico;
+    data['contadorAltaTemperatura'] = this.contadorAltaTemperatura;
+    data['contadorBaixaTemperatura'] = this.contadorBaixaTemperatura;
+    data['i_for'] = this.iFor;
+    data['i_obter'] = this.iObter;
+    data['tempoLoopControle'] = this.tempoLoopControle;
+    data['tempoLoopControle_Validacao'] = this.tempoLoopControleValidacao;
     return data;
   }
 }

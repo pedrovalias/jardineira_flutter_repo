@@ -21,6 +21,7 @@ class Constantes {
   static const String VALVULA_STATUS = "valvula_status";
   static const String TEMPERATURA = "temperatura";
   static const String UMIDADE_RELATIVA = "umidade_relativa";
+  static const String AUTO_AJUSTE_LOOP = "auto_ajuste_loop";
 
   static const String LIMIAR_SECO = "limiar_seco";
   static const String REGA = "rega";
@@ -35,4 +36,6 @@ class Constantes {
       "Porcentagem ideal de umidade do solo. A Jardineira só irá seguir com o processo de rega caso identificado umidade abaixo do valor estipulado.";
   static const String INFO_TEMPO_REGA_SLIDER =
       "Tempo total da ação de rega. Este parâmetro pode ser selecionado de 0 a 60 segundos.";
+  static const String INFO_TEMPO_LOOP_SLIDER =
+      "Intervalo de tempo entre uma ação de rega e outra. O período pode ser selecionado de 1 hora a 2 dias(48h).";
 }
