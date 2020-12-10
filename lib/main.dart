@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:jardineira_flutter/firebase/authentication_service.dart';
 import 'package:jardineira_flutter/home_page.dart';
 import 'package:jardineira_flutter/pages/login/login_page.dart';
-import 'package:jardineira_flutter/pages/login/sign_up.dart';
-import 'package:jardineira_flutter/splash_page.dart';
 import 'package:jardineira_flutter/widgets/home_page_teste.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';

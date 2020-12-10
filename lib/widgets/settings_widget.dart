@@ -16,9 +16,9 @@ class _SettingsWidgetState extends State<SettingsWidget> {
 
   // int _tempoRega;
 
-  double _valor1 = 2;
-  double _valor2 = 2;
-  double _valor3 = 2;
+  double _valor1 = 0;
+  double _valor2 = 0;
+  double _valor3 = 0;
   bool _valor4 = true;
 
   final dbRef = FirebaseDatabase.instance.reference();
@@ -51,12 +51,26 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                 children: <Widget>[
                   Expanded(
                     child: ListTile(
-                      // leading: Icon(Icons.ac_unit),
+                      leading: IconButton(
+                        splashColor: Colors.amber,
+                        splashRadius: 20,
+                        icon: Icon(
+                          Icons.help_outline,
+                          color: Colors.lightBlue,
+                        ),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => InfoDialog("Modo Automático",
+                                Constantes.INFO_MODO_AUTOMATICO),
+                          );
+                        },
+                      ),
                       title: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "Ajuste automático de tempo:",
+                            "Modo automático:",
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -64,6 +78,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                           ),
                           FlutterSwitch(
                             value: _valor4,
+                            height: 30,
                             borderRadius: 30.0,
                             padding: 8.0,
                             showOnOff: true,
@@ -112,8 +127,9 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                 ),
                                 Text(
                                   snapshot.data.snapshot
-                                      .value[Constantes.LIMIAR_SECO]
-                                      .toString(),
+                                          .value[Constantes.LIMIAR_SECO]
+                                          .toString() +
+                                      "%",
                                 )
                               ],
                             ),
@@ -122,9 +138,11 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                             value: _valor1,
                             min: 0,
                             max: 100,
-                            onChanged: (double v) {
+                            divisions: 100,
+                            label: _valor1.round().toString() + " %",
+                            onChanged: (double _novoValor) {
                               setState(() {
-                                _valor1 = v;
+                                _valor1 = _novoValor;
                               });
                             },
                           ),
@@ -159,7 +177,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  "Tempo Loop",
+                                  "Tempo Loop (Horas)",
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -167,8 +185,9 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                 ),
                                 Text(
                                   snapshot.data.snapshot
-                                      .value[Constantes.TEMPO_LOOP]
-                                      .toString(),
+                                          .value[Constantes.TEMPO_LOOP]
+                                          .toString() +
+                                      "H",
                                 )
                               ],
                             ),
@@ -176,10 +195,12 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                           Slider(
                             value: _valor2,
                             min: 0,
-                            max: 100,
-                            onChanged: (double v) {
+                            max: 48,
+                            divisions: 48,
+                            label: _valor2.round().toString() + " H",
+                            onChanged: (double _novoValor) {
                               setState(() {
-                                _valor2 = v;
+                                _valor2 = _novoValor;
                               });
                             },
                           ),
@@ -214,7 +235,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  "Tempo Rega",
+                                  "Tempo Rega (Seg.)",
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -222,8 +243,9 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                 ),
                                 Text(
                                   snapshot.data.snapshot
-                                      .value[Constantes.TEMPO_REGA]
-                                      .toString(),
+                                          .value[Constantes.TEMPO_REGA]
+                                          .toString() +
+                                      "s",
                                 )
                               ],
                             ),
@@ -231,10 +253,12 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                           Slider(
                             value: _valor3,
                             min: 0,
-                            max: 100,
-                            onChanged: (double v) {
+                            max: 60,
+                            divisions: 20,
+                            label: _valor3.round().toString() + " s",
+                            onChanged: (double _novoValor) {
                               setState(() {
-                                _valor3 = v;
+                                _valor3 = _novoValor;
                               });
                             },
                           ),
@@ -248,6 +272,8 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         FlatButton(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(90)),
                           child: Text(
                             "Configuração Padrão",
                             style: TextStyle(fontSize: 18),
@@ -258,12 +284,15 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                             showDialog(
                               context: context,
                               builder: (_) => InfoDialog(
-                                  "Configuraçãopadrão salva com sucesso!", ""),
+                                  "Configuração padrão salva com sucesso!",
+                                  Constantes.INFO_SALVAR_PADRAO_PARAMETROS),
                             );
                           },
                         ),
                         SizedBox(width: 30),
                         FlatButton(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(90)),
                           child: Text(
                             "Salvar",
                             style: TextStyle(fontSize: 18),
@@ -271,12 +300,13 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                           color: Colors.lightGreen,
                           onPressed: () {
                             _salvarConfig();
-                            _recuperaDados();
+                            // _recuperaDados();
                             showDialog(
                               context: context,
                               builder: (_) => InfoDialog(
                                   "Configuração personalizada salva com sucesso!",
-                                  ""),
+                                  Constantes
+                                      .INFO_SALVAR_PARAMETROS_PERSONALIZADOS),
                             );
                           },
                         ),

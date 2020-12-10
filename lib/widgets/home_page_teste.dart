@@ -5,7 +5,6 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:jardineira_flutter/drawer_list.dart';
 import 'package:jardineira_flutter/pages/menu.dart';
 import 'package:jardineira_flutter/util/info_dialog.dart';
 import 'package:jardineira_flutter/pages/settings_page.dart';
@@ -42,11 +41,11 @@ class _HomePageTesteState extends State<HomePageTeste>
   //   super.initState();
   // }
 
-  onUpdate() {
-    setState(() {
-      value = !value;
-    });
-  }
+  // onUpdate() {
+  //   setState(() {
+  //     value = !value;
+  //   });
+  // }
 
   static final GlobalKey<ScaffoldState> _scaffoldKey =
       new GlobalKey<ScaffoldState>();
@@ -64,7 +63,7 @@ class _HomePageTesteState extends State<HomePageTeste>
       key: _scaffoldKey,
       body: Column(
         children: <Widget>[
-          _dadosJardineiraStreamBuilder(),
+          Expanded(child: _dadosJardineiraStreamBuilder()),
         ],
       ),
       drawer: Menu(),
@@ -82,24 +81,22 @@ class _HomePageTesteState extends State<HomePageTeste>
           // int umidade_solo =
           //     snapshot.data.snapshot.value[Constantes.UMIDADE_SOLO];
           double _valor = 2;
-          return Expanded(
-            child: ListView(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: SlimyCard(
-                    color: Colors.grey[600],
-                    width: 400,
-                    topCardHeight: 300,
-                    bottomCardHeight: 600,
-                    borderRadius: 15,
-                    topCardWidget: _topCardWidget(snapshot, context),
-                    bottomCardWidget: SettingsWidget(),
-                    slimeEnabled: true,
-                  ),
+          return ListView(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: SlimyCard(
+                  color: Colors.grey[600],
+                  width: 390,
+                  topCardHeight: 200,
+                  bottomCardHeight: 600,
+                  borderRadius: 15,
+                  topCardWidget: _topCardWidget(snapshot, context),
+                  bottomCardWidget: SettingsWidget(),
+                  slimeEnabled: true,
                 ),
-              ],
-            ),
+              ),
+            ],
           );
         } else {
           return Container();
@@ -123,12 +120,13 @@ class _HomePageTesteState extends State<HomePageTeste>
             SizedBox(width: 8),
             WifiInfo(),
             Padding(
-              padding: EdgeInsets.only(left: 20),
+              padding: EdgeInsets.only(left: 8),
               child: _dadosAmbienteStreamBuilder(),
             ),
           ],
         ),
-        SizedBox(height: 30),
+        // SizedBox(height: 30),
+        _divider(),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -153,7 +151,7 @@ class _HomePageTesteState extends State<HomePageTeste>
                     child: FlatButton(
                       child: Icon(
                         Icons.waves,
-                        color: Colors.black,
+                        color: Colors.white,
                       ),
                       onPressed: () {
                         showDialog(
@@ -176,7 +174,8 @@ class _HomePageTesteState extends State<HomePageTeste>
             SizedBox(width: 16),
             // _sensorBooleanSTB(
             //     snapshot, "Vaso Cheio", "nivel_maximo"),
-            SizedBox(width: 16),
+            // SizedBox(width: 16),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -195,58 +194,164 @@ class _HomePageTesteState extends State<HomePageTeste>
                       ? Colors.green
                       : Colors.red,
                 ),
-                // _sensorRelativoSTB(
-                //     snapshot, "Umidade do Solo", "umidade_solo"),
               ],
             ),
             SizedBox(width: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                FaIcon(FontAwesomeIcons.faucet),
-
-                // _bigCircle(),
-                _sensorBooleanSTB(
-                    snapshot, "Válvula de Água", Constantes.VALVULA_STATUS)
-              ],
+            ClipOval(
+              child: Material(
+                color: Colors.grey[300], // button color
+                child: InkWell(
+                  splashColor: Colors.grey[300], // inkwell color
+                  child: SizedBox(
+                    width: 60,
+                    height: 60,
+                    child: Center(
+                      child: ClipOval(
+                        child: Material(
+                          color: snapshot.data.snapshot
+                                      .value[Constantes.VALVULA_STATUS] ==
+                                  false
+                              ? Colors.green
+                              : Colors.red, // button color
+                          child: InkWell(
+                            splashColor: Colors.grey[300], // inkwell color
+                            child: SizedBox(
+                                width: 50,
+                                height: 50,
+                                child: Center(
+                                    child: FaIcon(FontAwesomeIcons.faucet))),
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (_) => InfoDialog(
+                                  "Status da Válvula de Água",
+                                  snapshot.data.snapshot.value[
+                                              Constantes.VALVULA_STATUS] ==
+                                          false
+                                      ? Constantes.VALVULA_ON
+                                      : Constantes.VALVULA_OFF,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            FloatingActionButton.extended(
+              heroTag: "btnRegar",
+              icon: snapshot.data.snapshot.value[Constantes.VALVULA_STATUS] ==
+                      true
+                  ? Icon(Icons.local_florist_outlined)
+                  : Icon(Icons.local_florist),
+              backgroundColor:
+                  snapshot.data.snapshot.value[Constantes.VALVULA_STATUS] ==
+                          true
+                      ? Colors.lightGreen
+                      : Colors.yellow[300],
+              label: snapshot.data.snapshot.value[Constantes.VALVULA_STATUS] ==
+                      true
+                  ? Text("REGAR")
+                  : Text("REGANDO"),
+              elevation: 25.00,
+              onPressed: () {
+                // onUpdate();
+                acionarRega();
+                // Future<void> i = estadoRega();
+                // print("Onpressed Valor: $value");
+                // print("Onpressed Valor I: ${i}");
+                // readData();
+              },
             ),
           ],
         ),
         SizedBox(height: 30),
-        StreamBuilder(
-          initialData: false,
-          builder: (context, snapshot) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                FloatingActionButton.extended(
-                  heroTag: "btnRegar",
-                  icon: value
-                      ? Icon(Icons.local_florist_outlined)
-                      : Icon(Icons.local_florist),
-                  backgroundColor:
-                      value ? Colors.lightGreen : Colors.yellow[300],
-                  label: value ? Text("REGAR") : Text("REGANDO"),
-                  elevation: 25.00,
-                  onPressed: () {
-                    onUpdate();
-                    acionarRega();
-                    estadoRega();
-                    print("Onpressed Valor: $value");
-                    // readData();
-                  },
-                ),
-                SizedBox(width: 10),
-              ],
-            );
-          },
-        ),
+        // ClipOval(
+        //   child: Material(
+        //     color: Colors.grey[300], // button color
+        //     child: InkWell(
+        //       splashColor: Colors.grey[300], // inkwell color
+        //       child: SizedBox(
+        //         width: 60,
+        //         height: 60,
+        //         child: Center(
+        //           child: ClipOval(
+        //             child: Material(
+        //               color:
+        //                   snapshot.data.snapshot.value[Constantes.REGA] == true
+        //                       ? Colors.green
+        //                       : Colors.red, // button color
+        //               child: InkWell(
+        //                 splashColor: Colors.grey[300], // inkwell color
+        //                 child: SizedBox(
+        //                     width: 50,
+        //                     height: 50,
+        //                     child: Center(
+        //                         child: Icon(Icons.local_florist_outlined))),
+        //                 onTap: () {
+        //                   onUpdate();
+        //                   // acionarRega();
+        //                   // showDialog(
+        //                   //   context: context,
+        //                   //   builder: (_) => InfoDialog(
+        //                   //     "Status da Válvula de Água",
+        //                   //     snapshot.data.snapshot
+        //                   //                 .value[Constantes.VALVULA_STATUS] ==
+        //                   //             false
+        //                   //         ? Constantes.VALVULA_ON
+        //                   //         : Constantes.VALVULA_OFF,
+        //                   //   ),
+        //                   // );
+        //                 },
+        //               ),
+        //             ),
+        //           ),
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        // ),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [
+        //     FloatingActionButton.extended(
+        //       heroTag: "btnRegar",
+        //       icon: snapshot.data.snapshot.value[Constantes.VALVULA_STATUS] ==
+        //               true
+        //           ? Icon(Icons.local_florist_outlined)
+        //           : Icon(Icons.local_florist),
+        //       backgroundColor:
+        //           snapshot.data.snapshot.value[Constantes.VALVULA_STATUS] ==
+        //                   true
+        //               ? Colors.lightGreen
+        //               : Colors.yellow[300],
+        //       label: snapshot.data.snapshot.value[Constantes.VALVULA_STATUS] ==
+        //               true
+        //           ? Text("REGAR")
+        //           : Text("REGANDO"),
+        //       elevation: 25.00,
+        //       onPressed: () {
+        //         // onUpdate();
+        //         acionarRega();
+        //         // estadoRega();
+        //         print("Onpressed Valor: $value");
+        //         // readData();
+        //       },
+        //     ),
+        //     SizedBox(width: 10),
+        //   ],
+        // ),
       ],
     );
   }
 
-  Row _sensorRelativoSTB(
-      AsyncSnapshot<Event> snapshot, String titulo, String sensor) {
+  Row _sensorRelativoSTB(AsyncSnapshot<Event> snapshot, String sensor) {
     String _simbolo;
 
     if (sensor == Constantes.TEMPERATURA) {
@@ -257,11 +362,6 @@ class _HomePageTesteState extends State<HomePageTeste>
 
     return Row(
       children: [
-        Text(
-          titulo,
-          style: TextStyle(
-              color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-        ),
         snapshot.data.snapshot.value[sensor] == 0
             ? ButtonErrorDialog("Falha", Constantes.ERRO_LEITURA_SENSOR)
             : Row(
@@ -274,9 +374,6 @@ class _HomePageTesteState extends State<HomePageTeste>
                       fontSize: 20,
                     ),
                   ),
-                  // Icon(sensor == Constantes.TEMPERATURA
-                  //     ? WeatherIcons.celsius
-                  //     : WeatherIcons.humidity),
                 ],
               ),
       ],
@@ -295,16 +392,16 @@ class _HomePageTesteState extends State<HomePageTeste>
             fontWeight: FontWeight.bold,
           ),
         ),
-        Text(
-          sensor == Constantes.VALVULA_STATUS
-              ? !snapshot.data.snapshot.value[Constantes.VALVULA_STATUS] == true
-                  ? "REGANDO"
-                  : "DESLIGADA"
-              : snapshot.data.snapshot.value[sensor] == true
-                  ? "SIM"
-                  : "NÃO",
-          style: TextStyle(color: Colors.white, fontSize: 20),
-        ),
+        // Text(
+        //   sensor == Constantes.VALVULA_STATUS
+        //       ? !snapshot.data.snapshot.value[Constantes.VALVULA_STATUS] == true
+        //           ? "REGANDO"
+        //           : "DESLIGADA"
+        //       : snapshot.data.snapshot.value[sensor] == true
+        //           ? "SIM"
+        //           : "NÃO",
+        //   style: TextStyle(color: Colors.white, fontSize: 20),
+        // ),
       ],
     );
   }
@@ -315,19 +412,32 @@ class _HomePageTesteState extends State<HomePageTeste>
           if (snapshot.hasData &&
               !snapshot.hasError &&
               snapshot.data.snapshot.value != null) {
-            return Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: _sensorRelativoSTB(
-                      snapshot, "T ", Constantes.TEMPERATURA),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: _sensorRelativoSTB(
-                      snapshot, "U ", Constantes.UMIDADE_RELATIVA),
-                ),
-              ],
+            return FlatButton(
+              minWidth: 10,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(90)),
+              child: Row(
+                children: <Widget>[
+                  _sensorRelativoSTB(snapshot, Constantes.TEMPERATURA),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text("/"),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  _sensorRelativoSTB(snapshot, Constantes.UMIDADE_RELATIVA),
+                ],
+              ),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (_) => InfoDialog(
+                    "Dados do Ambiente",
+                    Constantes.INFO_DADOS_AMBIENTE,
+                  ),
+                );
+              },
             );
           } else {}
           return Container();
@@ -336,17 +446,17 @@ class _HomePageTesteState extends State<HomePageTeste>
   }
 
   Future<void> acionarRega() async {
-    dbRef.child(Constantes.PATH_ACIONAMENTOS).set({Constantes.REGA: !value});
-  }
-
-  Future<void> estadoRega() async {
-    dbRef.child(Constantes.PATH_ACIONAMENTOS).onValue.listen((event) {
-      var snapshot = event.snapshot;
-      print(snapshot.value);
-    });
+    dbRef.child(Constantes.PATH_ACIONAMENTOS).update(({Constantes.REGA: true}));
   }
 
   // Future<void> estadoRega() async {
+  //   dbRef.child(Constantes.PATH_ACIONAMENTOS).onValue.listen((event) {
+  //     var snapshot = event.snapshot;
+  //     print(snapshot.value);
+  //   });
+  // }
+
+  // Future<void> estadoRega2() async {
   //   dbRef.child("Acionamentos").once().then((DataSnapshot snapshot) {
   //     print(snapshot.value);
   //   });
@@ -376,6 +486,14 @@ class _HomePageTesteState extends State<HomePageTeste>
     // print(x);
     // print(y);
     return umdd;
+  }
+
+  _divider() {
+    return const Divider(
+      color: Colors.grey,
+      height: 20,
+      thickness: 0.5,
+    );
   }
 
   // Widget _bigCircle() {

@@ -10,12 +10,6 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  // double _novoLimiarSeco = 0;
-  // double _novoTempoLoop = 0;
-  // double _novoTempoRega = 0;
-
-  // int _tempoRega;
-
   double _valor1 = 2;
   double _valor2 = 2;
   double _valor3 = 2;
@@ -34,18 +28,6 @@ class _SettingsPageState extends State<SettingsPage> {
           if (snapshot.hasData &&
               !snapshot.hasError &&
               snapshot.data.snapshot.value != null) {
-            // TODO transformar lista de configuracao em ListTile
-
-            // _tempoRega = snapshot.data.snapshot.value[Constantes.TEMPO_REGA];
-            // int _tempoLoop =
-            //     snapshot.data.snapshot.value[Constantes.TEMPO_LOOP];
-            // int _limiarSeco =
-            //     snapshot.data.snapshot.value[Constantes.LIMIAR_SECO];
-
-            // double _tempoRegaPadrao = _tempoRega.toDouble();
-            // double _tempoLoopPadrao = _tempoLoop.toDouble();
-            // double _limiarSecoPadrao = _limiarSeco.toDouble();
-
             return Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -80,9 +62,12 @@ class _SettingsPageState extends State<SettingsPage> {
                           value: _valor1,
                           min: 0,
                           max: 100,
-                          onChanged: (double v) {
+                          divisions: 100,
+                          label: _valor1.round().toString() + " %",
+                          onChanged: (double _novoValor) {
                             setState(() {
-                              _valor1 = v;
+                              _valor1 = _novoValor;
+                              // _novoLimiarSeco = _limiarSecoPadrao;
                             });
                           },
                         ),

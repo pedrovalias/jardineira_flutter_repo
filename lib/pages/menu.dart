@@ -32,13 +32,13 @@ class Menu extends StatelessWidget {
                 "Mais informações..",
                 Icons.arrow_forward,
               ),
-              _MenuItem(
-                context,
-                Icons.settings,
-                "Configurações",
-                "",
-                null,
-              ),
+              // _MenuItem(
+              //   context,
+              //   Icons.settings,
+              //   "Configurações",
+              //   "",
+              //   null,
+              // ),
               _MenuItem(
                 context,
                 Icons.logout,
