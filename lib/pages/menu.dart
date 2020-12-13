@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:jardineira_flutter/firebase/authentication_service.dart';
+import 'package:jardineira_flutter/pages/ajuda_page.dart';
 import 'package:jardineira_flutter/pages/login/usuario.dart';
+import 'package:jardineira_flutter/util/nav.dart';
 import 'package:provider/provider.dart';
 
 class Menu extends StatelessWidget {
@@ -31,6 +33,7 @@ class Menu extends StatelessWidget {
                 "Ajuda",
                 "Mais informações..",
                 Icons.arrow_forward,
+                HelpPage(),
               ),
               // _MenuItem(
               //   context,
@@ -44,6 +47,7 @@ class Menu extends StatelessWidget {
                 Icons.logout,
                 "Logout",
                 "Aperte para sair",
+                null,
                 null,
               ),
             ],
@@ -71,6 +75,7 @@ class Menu extends StatelessWidget {
     String title,
     String subtitle,
     IconData icon2,
+    Widget page,
   ) {
     return ListTile(
       leading: Icon(icon),
@@ -82,7 +87,8 @@ class Menu extends StatelessWidget {
           context.read<AuthenticationService>().signOut();
         } else {
           print("Clicou $title");
-          Navigator.pop(context);
+          // Navigator.pop(context);
+          push(context, page);
         }
       },
     );
